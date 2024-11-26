@@ -5,7 +5,6 @@ import router from './router/router';
 import {store} from './store';
 import {createPinia} from 'pinia';
 import PrimeVue from "primevue/config";
-import Aura from '@primevue/themes/aura'
 
 const app = createApp(App);
 
