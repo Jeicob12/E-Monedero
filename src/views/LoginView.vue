@@ -1,91 +1,121 @@
 <script setup>
-import Button from 'primevue/button';
 import router from '../router/router.js';
-import InputText from 'primevue/Inputtext';
-import { onMounted, ref } from "vue";
+import { onMounted, ref, reactive } from "vue";
+import { store } from '../store/index.js';
 
 import CryptoService from '../service/cryptoService.js'
+import LabService from '../service/labService.js'
+// import store from '../store/index.js'
 
 const btc = ref(0);
-const etherum = ref(0);
+const ethereum = ref(0);
 const usdc = ref(0);
+const globalStore = store();
+const username = ref('');
+const password = ref('');
+const errors = reactive({
+    username: '',
+    password: ''
+});
 
-// const btcService = CryptoService();
+const login = () => {
+    errors.username = '';
+    errors.password = '';
 
-// const getBtcValue = async () => {
+    if (!username.value.trim()) {
+        errors.username = '*El campo Usuario es obligatorio.*';
+    }
+    if (!password.value.trim()) {
+        errors.password = '*El campo Contraseña es obligatorio.*';
+    }
 
-//     const btc = await  CryptoService.getBitcoin();
-//     console.log(btc)
-// }
+    if (errors.username || errors.password) {
+        return;
+    }
 
-// CryptoService.getBitcoin()
-//     .then(response => console.log(response.data))
-//     .catch(error => console.error(error));
-
-
-// CryptoService.getEtherum()
-//     .then(response => console.log(response.data))
-//     .catch(error => console.error(error));
-
-// CryptoService.getUSDC()
-//     .then(response => console.log(response.data))
-//     .catch(error => console.error(error));
-
-
-const goToHome = () => {
+    globalStore.setProfile({
+        username: username.value,
+        password: password.value
+    });
     router.push({ name: "home" });
+    console.log(globalStore.getProfile);
 };
+
+const formatToPesos = (value) => {
+    return new Intl.NumberFormat('es-AR', {
+        style: 'currency',
+        currency: 'ARS', 
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(value);
+};
+
 
 onMounted(() => {
     CryptoService.getBitcoin()
-        .then(response => { btc.value = response.data.totalBid })
-    console.log(btc)
+        .then(response => { btc.value = response.data.totalBid; })
     CryptoService.getEtherum()
-        .then(response => { etherum.value = response.data.totalBid })
-    console.log(etherum)
+        .then(response => { ethereum.value = response.data.totalBid })
     CryptoService.getUSDC()
         .then(response => { usdc.value = response.data.totalBid })
-    console.log(usdc)
 });
 </script>
 
 <template>
 
-
-    <div class="grid">
-
-        <div class="col-4 TE">
-            <span>BTC: $ {{ btc }} </span>
+    <div class="container-fluid min-vh-100 d-flex flex-column justify-content-center align-items-center bg-light">
+        <div class="grid">
+            <div class="col-4">
+                <h5 class="card-title text-primary fw-bold">
+                    <i class="pi pi-bitcoin text-primary me-2"></i> BTC
+                </h5>
+                <p class="card-text fs-5">Precio:
+                    <span class="fw-semibold text-dark">{{ formatToPesos(btc) }}</span>
+                </p>
+            </div>
+            <div class="col-4">
+                <h5 class="card-title text-warning fw-bold">
+                    <i class="pi pi-dollar text-warning me-2"></i> Ethereum
+                </h5>
+                <p class="card-text fs-5">Precio:
+                    <span class="fw-semibold text-dark">{{ formatToPesos(ethereum) }}</span>
+                </p>
+            </div>
+            <div class="col-4">
+                <h5 class="card-title text-warning fw-bold">
+                    <i class="pi pi-credit-card text-success me-2"></i> USDC
+                </h5>
+                <p class="card-text fs-5">Precio:
+                    <span class="fw-semibold text-dark">{{ formatToPesos(usdc) }}</span>
+                </p>
+            </div>
         </div>
-        <div class="col-4 TE">
-            <span>Etherum: $ {{ etherum }} </span>
-        </div>
-        <div class="col-4 TE">
-            <span>Usdc: $ {{ usdc }} </span>
-        </div>
-    </div>
-
-
-    <div class="container ">
-        <div class="row">
-            <div class="col-6 bg shadow-sm p-3 mt-2 bg-body rounded d-none d-lg-block"></div>
-            <div class="col-lg-6">
-                <div class="login-form fade-in-text">
-                    <form class="shadow p-3 mb-5 bg-body rounded m-3" @submit="alerta">
-                        <h1 class="bd my-4 mx-5">E-Monedero</h1>
-                        <div class="form-group">
-                            <label for="username" class="h5 mb-3">Usuario:</label>
-                            <InputText id="username" type="text" placeholder="Usuario" />
+        <!-- Sección de Login -->
+        <div class="row justify-content-center">
+            <div class="col-lg-12 col-md-6">
+                <div class="login-form bg-white shadow-lg p-5 rounded-lg position-relative">
+                    <h1 class="text-center text-primary fw-bold mb-4">E-Monedero</h1>
+                    <p class="text-center text-muted mb-4">¡Gestiona tus criptomonedas de forma segura y sencilla!</p>
+                    <form @submit.prevent="login">
+                        <div class="form-group mb-4">
+                            <label for="username" class="form-label fw-semibold">Usuario: </label>
+                            <input id="username" type="text" class="form-control form-control-lg"
+                                placeholder="Ingresa tu usuario" v-model="username"><br>
+                            <span v-if="errors.username" class="text-danger">{{ errors.username }}</span>
                         </div>
-                        <div class="form-group">
-                            <label for="Contraseña" class="h5 mb-3">Contraseña:</label>
-                            <InputText id="username" type="text" placeholder="Contraseña" />
+                        <div class="form-group mb-4">
+                            <label for="password" class="form-label fw-semibold">Contraseña: </label>
+                            <input id="password" type="password" class="form-control form-control-lg"
+                                placeholder="Ingresa tu contraseña" v-model="password"> <br>
+                            <span v-if="errors.password" class="text-danger">{{ errors.password }}</span>
                         </div>
-                        <button type="submit" class="btn btn-secondary w-100">Login</button>
-                        <div class="my-3">
-                            <span>¿No tienes cuenta? <a href="#">Registrate</a></span><br>
-                            <span>¿Olvidaste la contraseña? <a href="#">Recupera tu contraseña</a></span>
-                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg w-100 mb-4 fw-bold">Iniciar Sesión</button>
+                        <!-- <div class="text-center">
+                            <span class="d-block mb-2">¿No tienes cuenta? <a href="#"
+                                    class="text-primary fw-bold">Regístrate</a></span>
+                            <span>¿Olvidaste la contraseña? <a href="#" class="text-danger fw-bold">Recupera tu
+                                    contraseña</a></span>
+                        </div> -->
                     </form>
                 </div>
             </div>
@@ -93,3 +123,25 @@ onMounted(() => {
     </div>
 
 </template>
+
+<style>
+body {
+    background: linear-gradient(to right, #f7f9fc, #e9f5ff);
+    font-family: 'Roboto', sans-serif;
+}
+
+ .card:hover {
+    transform: translateY(-5px);
+    transition: 0.3s;
+}
+
+.login-form {
+    background: #fff;
+    border: 1px solid #ddd;
+}
+
+.login-form h1 {
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: 1px;
+}  
+</style>

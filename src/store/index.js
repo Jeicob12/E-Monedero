@@ -1,13 +1,19 @@
 import { defineStore } from "pinia";
 
 
-export const store = defineStore('store', () => {
-  const count = ref(0)
-  const name = ref('Eduardo')
-  const doubleCount = computed(() => count.value * 2)
-  function increment() {
-    count.value++
+export const store = defineStore('store', {
+  state: () => ({
+    profile: {},
+    transaction: [],
+  }),
+  actions: {
+    setProfile(profile){
+      this.profile = profile;
+    }
+  },
+  getters: {
+    getProfile: (state) => state.profile
   }
-
-  return { count, name, doubleCount, increment }
 });
+
+
