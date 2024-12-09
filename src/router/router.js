@@ -2,8 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue'
 import LoginView from '../views/LoginView.vue'
 import PurchaseView from '../views/PurchaseView.vue';
-// import SellView from '../views/SellView.vue';
-// import HistorialView from '../views/HistorialView.vue';
+import SaleView from '../views/SaleView.vue';
+import HistorycalView from '../views/HistorycalView.vue';
 // import AnalisisActualView from '../views/AnalisisActualView.vue';
 // import AnalisisInversionView from '../views/AnalisisInversionView.vue';
 const routes = [
@@ -25,6 +25,16 @@ const routes = [
     path: '/purchase',
     name: 'purchase',
     component: PurchaseView,
+  },
+  {
+    path: '/sale',
+    name: 'sale',
+    component: SaleView,
+  },
+  {
+    path: '/historycal',
+    name: 'historycal',
+    component: HistorycalView,
   },
 
 

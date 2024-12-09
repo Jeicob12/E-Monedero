@@ -7,46 +7,68 @@
 
 a {
   font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+  color: var(--primary-color);
+  text-decoration: none; /* Limpia la subrayación predeterminada */
+  transition: color 0.3s ease; /* Suaviza el cambio de color */
 }
 a:hover {
-  color: #535bf2;
+  color: var(--hover-color);
+}
+
+h1 {
+  font-size: 2.5rem;
+  line-height: 1.2;
+  margin-bottom: var(--spacing-lg); /* Espaciado consistente */
 }
 
 body {
   margin: 0;
   display: flex;
-  place-items: center;
+  align-items: center;
+  justify-content: center;
   min-width: 320px;
   min-height: 100vh;
+  background-color: #f8f9fa; /* Color de fondo más suave */
+  font-family: 'Arial', sans-serif; /* Fuente general */
+  color: #333; /* Texto más legible */
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+:root {
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 2rem;
+  --primary-color: #646cff;
+  --hover-color: #535bf2;
+  --card-bg: #ffffff;
+  --card-shadow: rgba(0, 0, 0, 0.1);
 }
 
 .card {
-  padding: 2em;
-} 
-
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  padding: var(--spacing-lg);
+  border-radius: 10px; /* Bordes redondeados */
+  background-color: var(--card-bg);
+  box-shadow: 0 4px 6px var(--card-shadow); /* Sombra ligera */
+  margin: var(--spacing-md) auto; /* Centrado */
+  max-width: 600px; /* Limita el ancho */
 }
 
-/* @media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+#app {
+  max-width: 1024px; /* Ajusta el ancho máximo */
+  margin: var(--spacing-lg) auto;
+  padding: var(--spacing-md);
+  text-align: center;
+  background-color: #ffffff; /* Fondo blanco limpio */
+  border-radius: 8px; /* Bordes redondeados */
+}
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2rem; /* Reduce el tamaño del título */
   }
-  a:hover {
-    color: #747bff;
+  .card {
+    padding: var(--spacing-md); /* Reduce el padding */
   }
-  button {
-    background-color: #f9f9f9;
+  #app {
+    padding: var(--spacing-sm);
   }
-} */
+}

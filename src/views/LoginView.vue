@@ -63,8 +63,8 @@ onMounted(() => {
 
 <template>
 
-    <div class="container-fluid min-vh-100 d-flex flex-column justify-content-center align-items-center bg-light">
-        <div class="grid">
+    <div class="container-fluid min-vh-100 d-flex flex-column justify-content align-items-center bg-light">
+        <div class="row">
             <div class="col-4">
                 <h5 class="card-title text-primary fw-bold">
                     <i class="pi pi-bitcoin text-primary me-2"></i> BTC
@@ -86,6 +86,7 @@ onMounted(() => {
                     <i class="pi pi-credit-card text-success me-2"></i> USDC
                 </h5>
                 <p class="card-text fs-5">Precio:
+                    <br>
                     <span class="fw-semibold text-dark">{{ formatToPesos(usdc) }}</span>
                 </p>
             </div>

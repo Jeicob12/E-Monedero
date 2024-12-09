@@ -22,13 +22,13 @@ const globalStore = store();
                         <li class="nav-item">
                             <router-link to="/purchase" class="nav-link">Comprar</router-link>
                         </li>
-                        <!-- <li class="nav-item">
-                            <router-link to="/sell" class="nav-link">Vender</router-link>
+                         <li class="nav-item">
+                            <router-link to="/sale" class="nav-link">Vender</router-link>
                         </li>
                         <li class="nav-item">
-                            <router-link to="/historial" class="nav-link">Historial</router-link>
+                            <router-link to="/historycal" class="nav-link">Historial</router-link>
                         </li>
-                        <li class="nav-item dropdown">
+                       <!-- <li class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" role="button"
                                 data-bs-toggle="dropdown">Análisis</a>
                             <ul class="dropdown-menu text-center">
