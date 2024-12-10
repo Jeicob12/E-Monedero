@@ -12,14 +12,19 @@ const globalStore = store();
 
 const valueCrypto = ref(0);
 const cryptoType = ref('');
+const isValidPurchase = ref(null);
 
+
+const formatToMoneyString = (value) => {
+    return parseFloat(value).toFixed(2); // Asegura siempre dos decimales en formato string
+};
 
 const handlerSubmit = (value) => {
 
     const type = value.target[0].value;
     const amount = value.target[1].value;
-    let money = 0;
-    console.log("type",type)
+    let money = "";
+    console.log("type", type)
 
     if (type == 'btc') {
 
@@ -27,10 +32,10 @@ const handlerSubmit = (value) => {
 
         CryptoService.getBitcoin()
             .then(response => {
-                money = parseFloat(amount) * response.data.totalBid
+                money = formatToMoneyString(parseFloat(amount) * response.data.totalBid);
                 valueCrypto.value = money;
                 globalStore.setPurchaseAction(cryptoType, amount, money)
-                console.log("money",money)
+                console.log("money", money)
 
             })
     }
@@ -38,7 +43,7 @@ const handlerSubmit = (value) => {
         cryptoType.value = type;
         CryptoService.getEtherum()
             .then(response => {
-                money = parseFloat(amount) * response.data.totalBid
+                money = formatToMoneyString(parseFloat(amount) * response.data.totalBid);
                 valueCrypto.value = money;
                 globalStore.setPurchaseAction(cryptoType, amount, money)
             })
@@ -47,7 +52,7 @@ const handlerSubmit = (value) => {
         cryptoType.value = type;
         CryptoService.getUSDC()
             .then(response => {
-                money = parseFloat(amount) * response.data.totalBid
+                money = formatToMoneyString(parseFloat(amount) * response.data.totalBid);
                 valueCrypto.value = money;
                 globalStore.setPurchaseAction(cryptoType, amount, money)
             })
@@ -57,7 +62,7 @@ const handlerSubmit = (value) => {
 const formatToPesos = (value) => {
     return new Intl.NumberFormat('es-AR', {
         style: 'currency',
-        currency: 'ARS', // Código correcto para pesos argentinos
+        currency: 'ARS', 
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
     }).format(value);
@@ -73,19 +78,41 @@ const formatCryptoName = (type) => {
     return cryptoNames[type.toLowerCase()] || type;
 }
 
+const clearForm = () => {
+    cryptoType.value = ""; 
+    valueCrypto.value = ""; 
+    globalStore.setPurchaseAction("", "", ""); 
+    
+    const form = document.querySelector("form");
+    if (form) {
+        form.reset();
+    }
+};
+
 
 const purchaseCrypto = async () => {
-    LabService.createTransactions("purchase", globalStore.purchaseAction.crypto_code,
-        globalStore.purchaseAction.crypto_amount, globalStore.purchaseAction.money)
-        .then(response => console.log(response.data))
-}
+    try {
+        await LabService.createTransactions(
+            "purchase",
+            globalStore.purchaseAction.crypto_code,
+            globalStore.purchaseAction.crypto_amount,
+            globalStore.purchaseAction.money
+        );
+
+        isValidPurchase.value = true;
+    } catch (error) {
+        isValidPurchase.value = false;
+    }
+    clearForm();
+    hideModalCompra();
+};
 
 
 </script>
 <template>
     <NavBar></NavBar>
     <div>
-        <h2 class="my-3">Comprar 💲</h2>
+        <h2 class="my-3 text-center">Comprar Crypto</h2>
         <div class="container">
             <form @submit.prevent="handlerSubmit">
                 <select class="form-select text-center mb-3" name="type" id="type" placeholder="Seleccione una moneda"
@@ -115,7 +142,6 @@ const purchaseCrypto = async () => {
                         <div class="modal-body">
                             <h5>Crypto a cotizar: {{ formatCryptoName(cryptoType) }}</h5>
                             <h5>Precio final ARS {{ formatToPesos(valueCrypto) }} </h5>
-                            <!-- <h5 class="exchange">exchange: {{exchangeUsed}}</h5> -->
                         </div>
                         <div class="modal-footer mx-5 ">
                             <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
@@ -126,18 +152,18 @@ const purchaseCrypto = async () => {
                 </div>
             </div>
         </div>
-        <!-- <div v-show="compraRealizada !== null">
+        <div v-if="isValidPurchase !== null">
             <div class="alert alert-success alertCompra mt-5 alert-dismissible fade show" role="alert"
-                v-show="compraRealizada">
-                💸¡Compra exitosa!💸
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                v-show="isValidPurchase">
+                ¡Compra exitosa!
+                <button type="button" class="btn-close" @click="isValidPurchase = null" aria-label="Close"></button>
             </div>
             <div class="alert alert-danger alertCompra mt-5 alert-dismissible fade show" role="alert"
-                v-show="!compraRealizada">
-                ❌ERROR❌
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                v-show="isValidPurchase === false">
+                Ooops.... No se pudo realizar la compra
+                <button type="button" class="btn-close" @click="isValidPurchase = null" aria-label="Close"></button>
             </div>
-        </div> -->
+        </div>
     </div>
 </template>
 
@@ -160,5 +186,12 @@ input::-webkit-inner-spin-button {
 
 input[type=number] {
     -moz-appearance: textfield;
+}
+
+.alertCompra {
+    width: 80%;
+    margin: 0 auto;
+    text-align: center;
+    font-size: 1.2em;
 }
 </style>

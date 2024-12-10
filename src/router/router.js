@@ -4,8 +4,8 @@ import LoginView from '../views/LoginView.vue'
 import PurchaseView from '../views/PurchaseView.vue';
 import SaleView from '../views/SaleView.vue';
 import HistorycalView from '../views/HistorycalView.vue';
-// import AnalisisActualView from '../views/AnalisisActualView.vue';
-// import AnalisisInversionView from '../views/AnalisisInversionView.vue';
+// import ActualAnalyticView from '../views/ActualAnalyticView.vue';
+// import InvestmentAnalyticView from '../views/InvestmentAnalyticView.vue';
 const routes = [
   {
     path:'/',

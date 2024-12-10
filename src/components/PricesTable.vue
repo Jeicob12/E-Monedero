@@ -12,7 +12,7 @@ const isLoading = ref(true);
 const formatToPesos = (value) => {
     return new Intl.NumberFormat('es-AR', {
         style: 'currency',
-        currency: 'ARS', // Código correcto para pesos argentinos
+        currency: 'ARS', 
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
     }).format(value);
@@ -34,19 +34,15 @@ onMounted(() => {
 
 <template>
     <div class="d-flex flex-column align-items-center my-5">
-        <!-- Componente de carga -->
         <LoadingPage v-if="isLoading"></LoadingPage>
-        
-        <!-- Contenido principal -->
+
         <div v-else class="content-container">
             <div class="row text-center">
                 <!-- Bitcoin -->
                 <div class="col-12 col-lg-4 mb-4">
                     <div class="shadow-sm p-4 bg-white rounded">
-                        <img src="../assets/btc.png" 
-                             class="rounded-circle img-fluid mx-auto d-block" 
-                             alt="Logo de Bitcoin" 
-                             style="max-width: 150px;">
+                        <img src="../assets/btc.png" class="rounded-circle img-fluid mx-auto d-block"
+                            alt="Logo de Bitcoin" style="max-width: 150px;">
                         <div class="mt-3">
                             <h2 class="my-2">Bitcoin</h2>
                             <div class="row">
@@ -67,10 +63,8 @@ onMounted(() => {
                 <!-- Ethereum -->
                 <div class="col-12 col-lg-4 mb-4">
                     <div class="shadow-sm p-4 bg-white rounded">
-                        <img src="../assets/logo-ethereum.png" 
-                             class="rounded-circle img-fluid mx-auto d-block" 
-                             alt="Logo de Ethereum" 
-                             style="max-width: 150px;">
+                        <img src="../assets/logo-ethereum.png" class="rounded-circle img-fluid mx-auto d-block"
+                            alt="Logo de Ethereum" style="max-width: 150px;">
                         <div class="mt-3">
                             <h2 class="my-2">Ethereum</h2>
                             <div class="row">
@@ -83,7 +77,8 @@ onMounted(() => {
                                     <h4 class="text-danger">{{ formatToPesos(ethereum.totalBid) }}</h4>
                                 </div>
                             </div>
-                            <h5>Cotización: <a href="https://www.satoshitango.com/" target="_blank">Satoshi Tango</a></h5>
+                            <h5>Cotización: <a href="https://www.satoshitango.com/" target="_blank">Satoshi Tango</a>
+                            </h5>
                         </div>
                     </div>
                 </div>
@@ -91,10 +86,8 @@ onMounted(() => {
                 <!-- USDC -->
                 <div class="col-12 col-lg-4 mb-4">
                     <div class="shadow-sm p-4 bg-white rounded">
-                        <img src="../assets/usdc-logo.png" 
-                             class="rounded-circle img-fluid mx-auto d-block" 
-                             alt="Logo de USDC" 
-                             style="max-width: 150px;">
+                        <img src="../assets/usdc-logo.png" class="rounded-circle img-fluid mx-auto d-block"
+                            alt="Logo de USDC" style="max-width: 150px;">
                         <div class="mt-3">
                             <h2 class="my-2">USDC</h2>
                             <div class="row">

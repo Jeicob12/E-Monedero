@@ -4,8 +4,6 @@ import { onMounted, ref, reactive } from "vue";
 import { store } from '../store/index.js';
 
 import CryptoService from '../service/cryptoService.js'
-import LabService from '../service/labService.js'
-// import store from '../store/index.js'
 
 const btc = ref(0);
 const ethereum = ref(0);
@@ -33,12 +31,14 @@ const login = () => {
         return;
     }
 
+    localStorage.setItem('username', username.value);
+
     globalStore.setProfile({
         username: username.value,
         password: password.value
     });
+
     router.push({ name: "home" });
-    console.log(globalStore.getProfile);
 };
 
 const formatToPesos = (value) => {
@@ -111,12 +111,6 @@ onMounted(() => {
                             <span v-if="errors.password" class="text-danger">{{ errors.password }}</span>
                         </div>
                         <button type="submit" class="btn btn-primary btn-lg w-100 mb-4 fw-bold">Iniciar Sesión</button>
-                        <!-- <div class="text-center">
-                            <span class="d-block mb-2">¿No tienes cuenta? <a href="#"
-                                    class="text-primary fw-bold">Regístrate</a></span>
-                            <span>¿Olvidaste la contraseña? <a href="#" class="text-danger fw-bold">Recupera tu
-                                    contraseña</a></span>
-                        </div> -->
                     </form>
                 </div>
             </div>

@@ -1,5 +1,4 @@
 import { labClient } from '../service/client.js'
-import { store } from '../store/index.js';
 
 
 
@@ -10,10 +9,10 @@ class LabService {
     }
 
     createTransactions(action, crypto_code, crypto_amount, money) {
-        const globalStore = store();
 
+        const storedUsername = localStorage.getItem('username');
         const data = {
-            user_id: globalStore.getProfile.username,
+            user_id: storedUsername,
             action: action,
             crypto_code: crypto_code,
             crypto_amount: crypto_amount,

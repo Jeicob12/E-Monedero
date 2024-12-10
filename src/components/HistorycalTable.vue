@@ -7,15 +7,14 @@ import { onMounted, ref } from "vue";
 
 
 const isLoading = ref(true);
-
-
 const globalStore = store();
+const storedUsername = localStorage.getItem('username');
 
 const getTransactions = async () => {
     isLoading.value = true;
 
     try {
-        const response = await LabService.getTransactions(globalStore.getProfile.username);
+        const response = await LabService.getTransactions(storedUsername);
         globalStore.setTransactions(response.data);
     } catch (error) {
         console.error("Error fetching transactions:", error);
@@ -23,6 +22,34 @@ const getTransactions = async () => {
         isLoading.value = false;
     }
 };
+
+const formatToPesos = (value) => {
+    return new Intl.NumberFormat('es-AR', {
+        style: 'currency',
+        currency: 'ARS', 
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(value);
+};
+
+const formatCryptoName = (type) => {
+    const cryptoNames = {
+        btc: 'Bitcoin',
+        eth: 'Ethereum',
+        usdc: 'USD Coin'
+    };
+
+    return cryptoNames[type.toLowerCase()] || type;
+}
+
+const formatTransaction = (type) => {
+    const transactionName = {
+        purchase: 'Compra',
+        sale: 'Venta',
+    };
+
+    return transactionName[type.toLowerCase()] || type;
+}
 
 onMounted(() => {
     getTransactions();
@@ -37,13 +64,11 @@ onMounted(() => {
     
 
     <div v-else class="content-container">
-        <!-- Mensaje de error si no hay transacciones -->
         <div v-if="!globalStore.$state.transaction || globalStore.$state.transaction.length === 0" class="error-container">
             <h1 class="error-title">Oops, parece que no hay nada aquí.</h1>
             <h2 class="error-subtitle">No se encontraron registros en el historial.</h2>
         </div>
 
-        <!-- Tabla de transacciones si existen -->
         <div v-else class="table-container">
             <h1 class="table-title">Historial de Transacciones</h1>
             <table class="transaction-table">
@@ -61,14 +86,15 @@ onMounted(() => {
                 <tbody>
                     <tr v-for="transaction in globalStore.$state.transaction" :key="transaction.id">
                         <td>{{ transaction.user_id }}</td>
-                        <td>{{ transaction.crypto_code }}</td>
+                        <td>{{ formatCryptoName(transaction.crypto_code) }}</td>
                         <td>{{ transaction.crypto_amount }}</td>
-                        <td>{{ transaction.action }}</td>
-                        <td>{{ transaction.money }}</td>
+                        <td>{{ formatTransaction(transaction.action) }}</td>
+                        <td>{{ formatToPesos(transaction.money) }}</td>
                         <td>{{ transaction.datetime }}</td>
                         <td>
-                            <button class="action-button">Ver</button>
-                        </td>
+                    <button class="action-button edit-button" @click="editTransaction(transaction)">Modificar</button>
+                    <button class="action-button delete-button" @click="deleteTransaction(transaction)">Eliminar</button>
+                </td>
                     </tr>
                 </tbody>
             </table>
@@ -77,7 +103,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-/* Contenedor principal */
 .content-container {
     display: flex;
     flex-direction: column;
@@ -88,7 +113,6 @@ onMounted(() => {
     padding: 20px;
 }
 
-/* Mensaje de error */
 .error-container {
     text-align: center;
     color: #444;
@@ -105,7 +129,6 @@ onMounted(() => {
     color: #777;
 }
 
-/* Contenedor de tabla */
 .table-container {
     width: 100%;
     max-width: 1200px;
@@ -122,7 +145,6 @@ onMounted(() => {
     text-align: center;
 }
 
-/* Tabla */
 .transaction-table {
     width: 100%;
     border-collapse: collapse;
@@ -148,7 +170,6 @@ onMounted(() => {
     background-color: #f1f1f1;
 }
 
-/* Botón de acción */
 .action-button {
     background-color: #4caf50;
     color: white;
@@ -161,5 +182,27 @@ onMounted(() => {
 
 .action-button:hover {
     background-color: #45a049;
+}
+.action-button {
+    padding: 5px 10px;
+    margin: 2px;
+    cursor: pointer;
+    border: none;
+    border-radius: 3px;
+    font-size: 0.9rem;
+}
+
+.edit-button {
+    background-color: #007bff;
+    color: white;
+}
+
+.delete-button {
+    background-color: #dc3545;
+    color: white;
+}
+
+.action-button:hover {
+    opacity: 0.8;
 }
 </style>

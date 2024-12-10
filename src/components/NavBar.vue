@@ -1,9 +1,13 @@
 <script setup>
-import { store } from '../store/index.js';
+import router from '../router/router.js';
+const storedUsername = localStorage.getItem('username');
 
-
-const globalStore = store();
-
+const logout = () => {
+    localStorage.removeItem('username');
+    router.push({ name: "login" }).then(() => {
+        window.location.reload(); 
+    });
+}
 
 </script>
 
@@ -48,7 +52,7 @@ const globalStore = store();
             <ul class="navbar-nav ml-auto nav-flex-icons me-5">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle user" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
-                        aria-current="page" href="#">{{ globalStore.getProfile.username }}</a>
+                        aria-current="page" href="#">{{ storedUsername }}</a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#cerrarSesionMdl">Cerrar
                             sesion</a>
@@ -64,9 +68,9 @@ const globalStore = store();
                     <h5 class="modal-title" id="exampleModalLabel">¿Deseas cerrar sesión?</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-footer mx-5 ">
+                <div class="modal-footer mx-5">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar sesión</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" @click="logout">Cerrar sesión</button>
                 </div>
             </div>
         </div>
