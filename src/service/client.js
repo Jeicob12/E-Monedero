@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const labClient = axios.create({
-    baseURL: 'https://laboratorio3-f36a.restdb.io/rest',
+    baseURL: 'https://laboratorio3-f36a.restdb.io/rest/',
     withCredentials: false,
     headers: {
       'x-apikey': '60eb09146661365596af552f',

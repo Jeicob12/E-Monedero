@@ -5,48 +5,49 @@ export const store = defineStore('store', {
   state: () => ({
     profile: {},
     transaction: [],
-    purchaseAction: {
-      crypto_code: "",
-      crypto_amount: "",
-      money: "",
-    },
-    saleAction: {},
+    purchaseAction: [],
+    saleAction: [],
+    cryptoCant: {}, 
   }),
   actions: {
     setProfile(profile) {
       this.profile = profile;
     },
-    setPurchaseAction(crypto_code, crypto_amount, money) {
-      this.purchaseAction = {
-        crypto_code: crypto_code,
-        crypto_amount: crypto_amount,
-        money: money
-      }
+    setPurchaseAction(data) {
+      this.purchaseAction.push(data) 
+      !this.cryptoCant[data.crypto_code] ? 0 : this.cryptoCant[data.crypto_code] += Number(data.crypto_amount);  
+    },
+    setSaleAction(data) {
+      this.purchaseAction.push(data) 
+      !this.cryptoCant[data.crypto_code] ? 0 : this.cryptoCant[data.crypto_code] -= Number(data.crypto_amount);  
     },
     setTransactions(transaction) {
       this.transaction = transaction;
-
-      const cryptoCant = {};
-
+      this.purchaseAction  = [];
+      this.saleAction= [];
+      this.cryptoCant = {}; 
+      
       this.transaction.forEach((tr) => {
-        if (tr.actions = "purchase") {
+        if (tr.action === "purchase") {
 
+          this.purchaseAction.push(tr)
           const crypto = tr.crypto_code;
           const crypto_amount = tr.crypto_amount;
 
-          if (!cryptoCant[crypto]) {
-            cryptoCant[crypto] = 0;
+          if (!this.cryptoCant[crypto]) {
+            this.cryptoCant[crypto] = 0;
           }
-          cryptoCant[crypto] += crypto_amount;
+          this.cryptoCant[crypto] += Number(crypto_amount);
         }
-        if (tr.actions = "sale") {
+        if (tr.action === "sale") {
+          this.saleAction.push(tr)
           const crypto = tr.crypto_code;
           const crypto_amount = tr.crypto_amount;
 
-          if (!cryptoCant[crypto]) {
-            cryptoCant[crypto] = 0;
+          if (!this.cryptoCant[crypto]) {
+            this.cryptoCant[crypto] = 0;
           }
-          cryptoCant[crypto] -= crypto_amount;
+          this.cryptoCant[crypto] -= Number(crypto_amount);
         }
       })
     }

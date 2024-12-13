@@ -11,6 +11,4 @@ export const CRYPTO_MAPPER = {
     [usdc]: CryptoService.getUSDC,
     [ethereum]: CryptoService.getEtherum
 
-
-
 };

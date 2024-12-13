@@ -2,7 +2,7 @@
 import NavBar from '../components/NavBar.vue';
 import CryptoService from '../service/cryptoService.js'
 import LabService from '../service/labService.js'
-import { onMounted, ref } from "vue";
+import { onMounted, ref, resolveDirective } from "vue";
 import { store } from '../store/index.js';
 
 
@@ -13,6 +13,9 @@ const globalStore = store();
 const valueCrypto = ref(0);
 const cryptoType = ref('');
 const isValidPurchase = ref(null);
+const amount = ref(0);
+const type = ref('');
+
 
 
 const formatToMoneyString = (value) => {
@@ -23,7 +26,7 @@ const handlerSubmit = (value) => {
 
     const type = value.target[0].value;
     const amount = value.target[1].value;
-    let money = "";
+    let money = 0;
     console.log("type", type)
 
     if (type == 'btc') {
@@ -34,7 +37,7 @@ const handlerSubmit = (value) => {
             .then(response => {
                 money = formatToMoneyString(parseFloat(amount) * response.data.totalBid);
                 valueCrypto.value = money;
-                globalStore.setPurchaseAction(cryptoType, amount, money)
+                
                 console.log("money", money)
 
             })
@@ -45,7 +48,6 @@ const handlerSubmit = (value) => {
             .then(response => {
                 money = formatToMoneyString(parseFloat(amount) * response.data.totalBid);
                 valueCrypto.value = money;
-                globalStore.setPurchaseAction(cryptoType, amount, money)
             })
     }
     if (type == 'usdc') {
@@ -54,10 +56,11 @@ const handlerSubmit = (value) => {
             .then(response => {
                 money = formatToMoneyString(parseFloat(amount) * response.data.totalBid);
                 valueCrypto.value = money;
-                globalStore.setPurchaseAction(cryptoType, amount, money)
             })
     }
 }
+
+console.log('globalStore',globalStore.$state)
 
 const formatToPesos = (value) => {
     return new Intl.NumberFormat('es-AR', {
@@ -92,19 +95,29 @@ const clearForm = () => {
 
 const purchaseCrypto = async () => {
     try {
-        await LabService.createTransactions(
-            "purchase",
-            globalStore.purchaseAction.crypto_code,
-            globalStore.purchaseAction.crypto_amount,
-            globalStore.purchaseAction.money
-        );
+        console.log('tr',type.value, amount.value, valueCrypto.value)
+
+        const storedUsername = localStorage.getItem('username');
+        const data = {
+            user_id: storedUsername,
+            action: 'purchase',
+            crypto_code: type.value,
+            crypto_amount: amount.value,
+            money: valueCrypto.value,
+            datetime: Date.now()
+
+        }
+        await LabService.createTransactions(data);
+
+        globalStore.setPurchaseAction(data);
 
         isValidPurchase.value = true;
+
+
     } catch (error) {
         isValidPurchase.value = false;
     }
     clearForm();
-    hideModalCompra();
 };
 
 
@@ -115,7 +128,7 @@ const purchaseCrypto = async () => {
         <h2 class="my-3 text-center">Comprar Crypto</h2>
         <div class="container">
             <form @submit.prevent="handlerSubmit">
-                <select class="form-select text-center mb-3" name="type" id="type" placeholder="Seleccione una moneda"
+                <select class="form-select text-center mb-3" name="type" v-model="type" id="type" placeholder="Seleccione una moneda"
                     required>
                     <option value=""></option>
                     <option value="usdc">USDC</option>
@@ -126,8 +139,11 @@ const purchaseCrypto = async () => {
                 <div class="input-group mb-3">
                     <span class="input-group-text"></span>
                     <span class="input-group-text">$</span>
-                    <input type="text" class="form-control" placeholder="Ej: 0.00001">
+                    <input type="number" v-model="amount" step="0.00000000001" min="0" class="form-control" placeholder="Ej: 0.00001" >
                 </div>
+                <!-- <div class="col-12">
+                    <span>{{formatToPesos(valueCrypto) }}</span>
+                </div> -->
                 <button type="submit" class="btn btn-light border" data-bs-toggle="modal" data-bs-target="#modalCompra">
                     Buscar cotización
                 </button>

@@ -32,27 +32,22 @@ const logout = () => {
                         <li class="nav-item">
                             <router-link to="/historycal" class="nav-link">Historial</router-link>
                         </li>
-                       <!-- <li class="nav-item dropdown">
+                       <li class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" role="button"
                                 data-bs-toggle="dropdown">Análisis</a>
                             <ul class="dropdown-menu text-center">
                                 <li class="nav-item">
-                                    <router-link to="/analisis/actual" class="dropdown-item">Análisis
-                                        actual</router-link>
-                                </li>
-                                <li class="nav-item">
-                                    <router-link to="/analisis/inversion" class="dropdown-item">Análisis de
-                                        inversiones</router-link>
+                                    <router-link to="/analityc" class="dropdown-item">Análisis actual</router-link>
                                 </li>
                             </ul>
-                        </li> -->
+                        </li>
                     </ul>
                 </div>
             </div>
             <ul class="navbar-nav ml-auto nav-flex-icons me-5">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle user" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
-                        aria-current="page" href="#">{{ storedUsername }}</a>
+                        aria-current="page" href="#">{{ storedUsername.toUpperCase() }}</a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#cerrarSesionMdl">Cerrar
                             sesion</a>

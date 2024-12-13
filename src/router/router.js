@@ -4,7 +4,7 @@ import LoginView from '../views/LoginView.vue'
 import PurchaseView from '../views/PurchaseView.vue';
 import SaleView from '../views/SaleView.vue';
 import HistorycalView from '../views/HistorycalView.vue';
-// import ActualAnalyticView from '../views/ActualAnalyticView.vue';
+import AnalitycView from '../views/AnalitycView.vue';
 // import InvestmentAnalyticView from '../views/InvestmentAnalyticView.vue';
 const routes = [
   {
@@ -36,7 +36,11 @@ const routes = [
     name: 'historycal',
     component: HistorycalView,
   },
-
+  {
+    path: '/analityc',
+    name: 'analityc',
+    component: AnalitycView,
+  },
 
 ]
 
