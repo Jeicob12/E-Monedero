@@ -205,7 +205,6 @@ onMounted(() => {
 <template>
     <LoadingPage v-if="isLoading"></LoadingPage>
 
-
     <div v-else class="content-container">
         <div v-if="!globalStore.$state.transaction || globalStore.$state.transaction.length === 0"
             class="error-container">
@@ -245,11 +244,12 @@ onMounted(() => {
                 </tbody>
             </table>
         </div>
+
         <div id="editTransactionModal" class="custom-modal">
             <div class="custom-modal-content">
                 <div class="custom-modal-header">
                     <h2>Editar Transacción</h2>
-                    <button class="close-modal" @click="closeModal()">×</button>
+                    <button class="close-modal" @click="closeModal()">&times;</button>
                 </div>
                 <div class="custom-modal-body">
                     <form id="editTransactionForm">
@@ -270,10 +270,8 @@ onMounted(() => {
                         <label for="money">Precio</label>
                         <input type="number" id="money" v-model="price" class="custom-input" placeholder="Precio">
 
-
                         <label for="action">Movimiento</label>
                         <input type="text" id="action" v-model="action" class="custom-input" placeholder="Movimiento">
-
                     </form>
                 </div>
                 <div class="custom-modal-footer">
@@ -367,15 +365,6 @@ onMounted(() => {
     background-color: #45a049;
 }
 
-.action-button {
-    padding: 5px 10px;
-    margin: 2px;
-    cursor: pointer;
-    border: none;
-    border-radius: 3px;
-    font-size: 0.9rem;
-}
-
 .edit-button {
     background-color: #007bff;
     color: white;
@@ -384,10 +373,6 @@ onMounted(() => {
 .delete-button {
     background-color: #dc3545;
     color: white;
-}
-
-.action-button:hover {
-    opacity: 0.8;
 }
 
 .custom-modal {

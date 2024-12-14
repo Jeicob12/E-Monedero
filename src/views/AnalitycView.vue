@@ -68,6 +68,7 @@ const groupedTransactions = computed(() => {
             grouped[crypto_code].totalPrice -= validMoney;
         }
     });
+    
 
     return grouped;
 });
@@ -107,6 +108,12 @@ const updateChartData = () => {
     };
 };
 
+const totalPrice = computed(() => {
+    return Object.values(groupedTransactions.value).reduce((total, group) => {
+        return total + group.totalPrice;
+    }, 0);
+});
+
 watch(groupedTransactions, updateChartData, { immediate: true });
 
 onMounted(() => {
@@ -118,24 +125,30 @@ onMounted(() => {
     <NavBar></NavBar>
 
     <div class="table-container">
-        <h2 class="table-title">Resumen Agrupado por Compras</h2>
-        <table class="summary-table">
-            <thead>
-                <tr>
-                    <th>Crypto</th>
-                    <th>Total Cantidad</th>
-                    <th>Precio Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="(group, crypto) in groupedTransactions" :key="crypto">
-                    <td>{{ formatCryptoName(crypto) }}</td>
-                    <td>{{ group.totalAmount }}</td>
-                    <td>{{ formatToPesos(group.totalPrice) }}</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+    <h2 class="table-title">Resumen Agrupado por Compras</h2>
+    <table class="summary-table">
+        <thead>
+            <tr>
+                <th>Crypto</th>
+                <th>Total Cantidad</th>
+                <th>Precio Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="(group, crypto) in groupedTransactions" :key="crypto">
+                <td>{{ formatCryptoName(crypto) }}</td>
+                <td>{{ group.totalAmount }}</td>
+                <td>{{ formatToPesos(group.totalPrice) }}</td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="2" class="footer-label">Dinero Total</td>
+                <td>{{ formatToPesos(totalPrice) }}</td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
 
     <div class="chart-container">
         <h2 class="chart-title">Gráfico de Precio Total por Cripto</h2>
