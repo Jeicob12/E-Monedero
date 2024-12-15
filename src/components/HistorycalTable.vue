@@ -15,7 +15,8 @@ const type = ref('');
 const amount = ref(0);
 const price = ref('');
 const action = ref('')
-const currentTransactionId = ref(null);
+
+const idtr = ref('');
 
 const getTransactions = async () => {
     isLoading.value = true;
@@ -99,38 +100,29 @@ const calculatePrice = async (cryptoCode, cryptoAmount) => {
 
 const updateTransaction = async (transactionId) => {
     try {
-        currentTransactionId.value = transactionId;
         if (!transactionId) {
             alert("El ID de la transacción no es válido.");
             return;
         }
 
-        // Validar que las transacciones estén definidas y sean un arreglo
         if (!Array.isArray(globalStore.$state.transaction)) {
             console.error("Las transacciones no están definidas o no son un arreglo.");
             return;
         }
 
-        // Buscar la transacción
         const transaction = globalStore.$state.transaction.find(t => t._id === transactionId);
-
-        console.log("transaction", transaction)
-
-        // Validar si la transacción existe
         if (!transaction) {
             alert(`No se encontró ninguna transacción con el ID ${transactionId}.`);
             return;
         }
-
-        // Asignar valores al modelo del modal
+        
+        idtr.value = transaction._id;
         type.value = transaction.crypto_code;
         amount.value = transaction.crypto_amount;
         price.value = transaction.money;
         action.value = transaction.action;
-        // Abrir el modal
         openModal();
 
-        // Calcular automáticamente el precio según la moneda
         await calculatePrice(transaction.crypto_code, transaction.crypto_amount);
     } catch (error) {
         console.error("Error al cargar la transacción para edición:", error);
@@ -139,21 +131,22 @@ const updateTransaction = async (transactionId) => {
 };
 
 
-const saveTransaction = async (transactionId) => {
+const saveTransaction = async () => {
     const updatedData = {
         crypto_code: type.value,
         crypto_amount: parseFloat(amount.value),
-        money: parseFloat(price.value),
+        money: price.value.toString(),
         action: action.value,
     };
-
+    
     if (!updatedData.crypto_code || isNaN(updatedData.crypto_amount) || updatedData.crypto_amount <= 0) {
         alert("Por favor, completa todos los campos correctamente.");
         return;
     }
-
+    
     try {
-        await LabService.updateTransactions(transactionId, updatedData);
+
+        await LabService.updateTransactions(idtr.value, updatedData);
 
         alert("Transacción actualizada con éxito.");
 
@@ -253,8 +246,6 @@ onMounted(() => {
                 </div>
                 <div class="custom-modal-body">
                     <form id="editTransactionForm">
-                        <label for="storedUsername">Usuario</label>
-                        <input type="text" id="user_id" class="custom-input" placeholder="Usuario" disabled>
 
                         <label for="crypto">Criptomoneda</label>
                         <select id="crypto" v-model="type" class="custom-select" @change="updatePrice">
@@ -262,7 +253,7 @@ onMounted(() => {
                             <option value="eth">Ethereum</option>
                             <option value="usdc">USDC</option>
                         </select>
-
+                        <br>
                         <label for="amount">Cantidad</label>
                         <input type="number" id="amount" v-model="amount" class="custom-input" placeholder="Cantidad"
                             @input="updatePrice">
@@ -275,7 +266,7 @@ onMounted(() => {
                     </form>
                 </div>
                 <div class="custom-modal-footer">
-                    <button class="custom-button" @click="saveTransaction(transaction._id)">Guardar Cambios</button>
+                    <button class="custom-button" @click="saveTransaction()">Guardar Cambios</button>
                     <button class="custom-button" @click="closeModal()">Cancelar</button>
                 </div>
             </div>
@@ -434,5 +425,41 @@ onMounted(() => {
     font-size: 20px;
     cursor: pointer;
     color: #000;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.custom-select {
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    outline: none;
+    transition: border-color 0.3s ease-in-out;
+}
+
+.custom-select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.custom-select {
+    width: 100%;
+}
+
+.custom-modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 </style>

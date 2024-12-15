@@ -130,8 +130,8 @@ onMounted(() => {
         <thead>
             <tr>
                 <th>Crypto</th>
-                <th>Total Cantidad</th>
-                <th>Precio Total</th>
+                <th>Total Cantidad</th> 
+                <th>Total ARs ($)</th>
             </tr>
         </thead>
         <tbody>
