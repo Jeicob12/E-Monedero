@@ -33,6 +33,7 @@ const getTransactions = async () => {
 };
 
 console.log('globalStore', globalStore.$state)
+
 const formatToPesos = (value) => {
     return new Intl.NumberFormat('es-AR', {
         style: 'currency',
@@ -61,6 +62,19 @@ const formatTransaction = (type) => {
     return transactionName[type.toLowerCase()] || type;
 }
 
+const formatDateTime = (fecha) => {
+    const date = new Date(fecha);
+
+    if (isNaN(date)) {
+        throw new Error("Fecha inválida");
+    }
+
+    const isoString = date.toISOString();
+    const [datePart] = isoString.split('T');
+    const formattedDate = datePart.split('-').reverse().join('-'); 
+
+    return `${formattedDate}`;
+};
 const openModal = () => {
     document.getElementById('editTransactionModal').style.display = 'flex';
 };
@@ -226,7 +240,7 @@ onMounted(() => {
                         <td>{{ transaction.crypto_amount }}</td>
                         <td>{{ formatTransaction(transaction.action) }}</td>
                         <td>{{ formatToPesos(transaction.money) }}</td>
-                        <td>{{ transaction.datetime }}</td>
+                        <td>{{ formatDateTime(transaction.datetime) }}</td>
                         <td>
                             <button class="action-button edit-button"
                                 @click="updateTransaction(transaction._id)">Modificar</button>

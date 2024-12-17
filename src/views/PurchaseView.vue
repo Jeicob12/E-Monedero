@@ -36,7 +36,7 @@ const handlerSubmit = (value) => {
 
         CryptoService.getBitcoin()
             .then(response => {
-                money = formatToMoneyString(parseFloat(amount) * response.data.totalBid);
+                money = formatToMoneyString(parseFloat(amount) * response.data.totalAsk);
                 valueCrypto.value = money;
 
                 console.log("money", money)
@@ -47,7 +47,7 @@ const handlerSubmit = (value) => {
         cryptoType.value = type;
         CryptoService.getEtherum()
             .then(response => {
-                money = formatToMoneyString(parseFloat(amount) * response.data.totalBid);
+                money = formatToMoneyString(parseFloat(amount) * response.data.totalAsk);
                 valueCrypto.value = money;
             })
     }
@@ -55,7 +55,7 @@ const handlerSubmit = (value) => {
         cryptoType.value = type;
         CryptoService.getUSDC()
             .then(response => {
-                money = formatToMoneyString(parseFloat(amount) * response.data.totalBid);
+                money = formatToMoneyString(parseFloat(amount) * response.data.totalAsk);
                 valueCrypto.value = money;
             })
     }
