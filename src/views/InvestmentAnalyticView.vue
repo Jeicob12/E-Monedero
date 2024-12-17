@@ -4,6 +4,8 @@ import { store } from '../store/index.js';
 import { onMounted, ref, computed } from "vue";
 import LabService from '../service/labService.js'
 import CryptoService from '../service/cryptoService.js'
+import LoadingPage from '../components/LoadingPage.vue';
+
 
 const globalStore = store();
 
@@ -16,8 +18,8 @@ const storedUsername = localStorage.getItem('username');
 const getTransactions = async () => {
     isLoading.value = true;
     try {
-        const response = await LabService.getTransactions(storedUsername); // Usar username del store
-        globalStore.setTransactions(response.data); // Guardar las transacciones en el store
+        const response = await LabService.getTransactions(storedUsername);
+        globalStore.setTransactions(response.data);
     } catch (error) {
         console.error("Error fetching transactions:", error);
     } finally {
@@ -25,7 +27,6 @@ const getTransactions = async () => {
     }
 };
 
-console.log('tr',globalStore.$state.transaction.money)
 
 const investmentAnalysis = computed(() => {
     const transactions = globalStore.$state.transaction;
@@ -38,14 +39,26 @@ const investmentAnalysis = computed(() => {
     };
 
     transactions.forEach(tx => {
+
+        const parseCryptoAmount = Number(tx.crypto_amount);
+        const parseMoney = Number(tx.money);
+        console.log('tx', tx)
+
+        console.log(parseCryptoAmount)
+        console.log(parseMoney)
+
         if (tx.action === 'purchase') {
-            totalInvested += tx.crypto_amount * btc.value.totalAsk; // Usar precio de compra
-            totalAssets[tx.currency] += tx.crypto_amount;
+            totalInvested += parseMoney;
+            totalAssets[tx.crypto_code] += parseCryptoAmount;
         } else if (tx.action === 'sale') {
-            totalSold += tx.crypto_amount * btc.value.totalBid; // Usar precio de venta
-            totalAssets[tx.currency] -= tx.crypto_amount;
+            totalSold += parseMoney; 
+            totalAssets[tx.crypto_code] -= parseCryptoAmount;
         }
     });
+
+    console.log('totalInvested', totalInvested)
+    console.log('totalSold', totalSold)
+    console.log('totalAssets', totalAssets)
 
     const currentValue =
         totalAssets.btc * btc.value.totalBid +
@@ -62,6 +75,7 @@ const investmentAnalysis = computed(() => {
         totalAssets,
     };
 });
+
 const formatToPesos = (value) => {
     return new Intl.NumberFormat('es-AR', {
         style: 'currency',
@@ -106,69 +120,100 @@ onMounted(async () => {
 });
 </script>
 
+
+
 <template>
     <NavBar></NavBar>
 
-    <div v-if="isLoading">Loading...</div>
+    <LoadingPage class="text-center" v-if="isLoading"></LoadingPage>
+
     <div v-else>
         <div class="my-5">
-            <h2 class="text-center mb-4">Tus Criptomonedas</h2>
-            <div class="row">
-                <div v-for="(amount, crypto) in globalStore.$state.cryptoCant" :key="crypto"
-                    class="col-12 col-sm-6 col-md-4 col-lg-4 mb-4">
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-info text-white text-center">
-                            <h5 class="m-0">{{ crypto.toUpperCase() }}</h5>
+            <h2 class="text-center mb-4">
+                <i class="fas fa-coins me-2 text-warning"></i> 
+                Tus Criptomonedas
+            </h2>
+            <div class="row g-4">
+                <div 
+                    v-for="(amount, crypto) in globalStore.$state.cryptoCant" 
+                    :key="crypto"
+                    class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    <div class="card shadow border-0">
+                        <div class="card-header text-white text-center" :class="getCryptoCardClass(crypto)">
+                            <h5 class="m-0">
+                                <i class="fas fa-chart-pie me-2"></i>{{ crypto.toUpperCase() }}
+                            </h5>
                         </div>
                         <div class="card-body text-center">
-                            <p class="card-text fs-4">
-                                <strong>{{ amount }}</strong>
+                            <p class="card-text fs-4 fw-bold text-primary">
+                                {{ amount }}
                             </p>
+                            <p class="text-muted small">Cantidad disponible</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <h2>Análisis de Inversión</h2>
-        <p>Total invertido: {{ formatToPesos(investmentAnalysis.totalInvested.toFixed(2)) }}</p>
-        <p>Total vendido: {{ formatToPesos(investmentAnalysis.totalSold.toFixed(2)) }}</p>
-        <p>
-            Ganancia/Pérdida:
-            <span
-                :class="{ 'text-success': investmentAnalysis.netProfit > 0, 'text-danger': investmentAnalysis.netProfit < 0 }">
-                {{ formatToPesos(investmentAnalysis.netProfit.toFixed(2)) }}
-            </span>
-        </p>
-        <p>Valor actual de la inversión: {{ formatToPesos(investmentAnalysis.currentValue.toFixed(2)) }}</p>
+
+        <div class="mt-5 p-4 bg-light rounded shadow">
+            <h2 class="text-center">
+                <i class="fas fa-chart-line me-2 text-success"></i>
+                Análisis de Inversión
+            </h2>
+            <div class="row mt-4">
+                <div class="col-12 col-md-4 text-center">
+                    <p class="fs-5 fw-bold text-info">Total invertido</p>
+                    <p class="fs-4 text-primary">{{ formatToPesos(investmentAnalysis.totalInvested) }}</p>
+                </div>
+                <div class="col-12 col-md-4 text-center">
+                    <p class="fs-5 fw-bold text-warning">Total vendido</p>
+                    <p class="fs-4 text-danger">{{ formatToPesos(investmentAnalysis.totalSold) }}</p>
+                </div>
+                <div class="col-12 col-md-4 text-center">
+                    <p class="fs-5 fw-bold text-success">Valor actual</p>
+                    <p class="fs-4 text-success">{{ formatToPesos(investmentAnalysis.currentValue) }}</p>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
+<script>
+export default {
+    methods: {
+        getCryptoCardClass(crypto) {
+            const cryptoColors = {
+                BTC: 'bg-warning',
+                ETH: 'bg-primary',
+                ADA: 'bg-success',
+                XRP: 'bg-danger',
+                default: 'bg-secondary',
+            };
+            return cryptoColors[crypto.toUpperCase()] || cryptoColors.default;
+        },
+        formatToPesos(value) {
+            return new Intl.NumberFormat('es-AR', {
+                style: 'currency',
+                currency: 'ARS',
+            }).format(value);
+        },
+    },
+};
+</script>
+
 <style scoped>
-.investment-analysis {
-    font-family: Arial, sans-serif;
-}
-
 .card {
-    border: 1px solid #ddd;
+    border-radius: 12px;
+    transition: transform 0.2s ease-in-out;
 }
-
-.card-title {
-    font-size: 1.2rem;
-    color: #6c757d;
+.card:hover {
+    transform: scale(1.05);
 }
-
-.card-text {
-    font-weight: bold;
-    color: #007bff;
+.card-header {
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
 }
-
-.table {
-    border: 1px solid #ddd;
+.bg-light {
+    background-color: #f8f9fa !important;
 }
-
-.table th,
-.table td {
-    text-align: center;
-    vertical-align: middle;
-}
-</style>
+</style>  

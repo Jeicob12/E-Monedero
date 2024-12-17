@@ -165,7 +165,7 @@ const saveTransaction = async () => {
         alert("Transacción actualizada con éxito.");
 
         closeModal();
-        getTransactions(); // Recarga la lista de transacciones
+        getTransactions(); 
     } catch (error) {
         console.error("Error al actualizar la transacción:", error);
         alert("Hubo un error al intentar actualizar la transacción.");

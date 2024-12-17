@@ -16,7 +16,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh; /* Centra el contenido en el viewport */
+  height: 100vh; 
 }
 
 .load {

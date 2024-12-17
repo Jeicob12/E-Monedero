@@ -54,13 +54,4 @@ const router = createRouter({
   routes,
 });
 
-// router.beforeEach((to, from, next) => {
-//   const esVistaProtegida = to.matched.some((item) => item.meta.vistaProtegida);
-//   if (esVistaProtegida && store.state.Id === null) {
-//     next('/');
-//   } else {
-//     next();
-//   }
-// });
-
 export default router;
